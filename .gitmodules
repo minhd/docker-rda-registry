@@ -1,0 +1,12 @@
+[submodule "rda-registry/src/rda-registry"]
+	path = rda-registry/src/rda-registry
+	url = https://github.com/au-research/ANDS-ResearchData-Registry
+[submodule "rda-registry/src/taskmanager"]
+	path = rda-registry/src/taskmanager
+	url = https://github.com/au-research/ANDS-TaskManager
+[submodule "rda-registry/src/harvester"]
+	path = rda-registry/src/harvester
+	url = https://github.com/au-research/ANDS-Harvester
+[submodule "rda-registry/src/solr-import-export-json"]
+	path = rda-registry/src/solr-import-export-json
+	url = https://github.com/minhd/solr-import-export-json.git
