@@ -1,4 +1,4 @@
-# RDA Development Environment for Apple Silicon
+# RDA Registry sample docker environment
 
 ## Quick Start
 
