@@ -16,11 +16,11 @@ RUN yum -y --setopt=tsflags=nodocs update && \
 RUN yum -y install php56w php56w-common php56w-mysql php56w-ldap php56w-xml php56w-mbstring php56w-bcmath php56w-pecl-xdebug && \
     yum clean all
 
-# composer 2.x latest
-RUN curl -o /usr/local/bin/composer https://getcomposer.org/download/latest-2.x/composer.phar && chmod +x /usr/local/bin/composer
+# composer 2.2.x latest
+RUN curl -o /usr/local/bin/composer https://getcomposer.org/download/latest-2.2.x/composer.phar && chmod +x /usr/local/bin/composer
 
 # nodejs
-RUN yum -y --setopt=tsflags=nodocs install nodejs && yum clean all
+RUN yum -y --setopt=tsflags=nodocs install nodejs npm && yum clean all
 RUN npm install -g n
 RUN n stable
 RUN npm install -g yarn
@@ -55,13 +55,17 @@ COPY conf/taskmanager-config.py /opt/apps/taskmanager/current/myconfig.py
 # harvester
 COPY src/harvester /opt/apps/harvester/current
 RUN cd /opt/apps/harvester/current/ && rm -rf venv && rm -rf __pycache__ && /usr/bin/python3 -m venv venv && venv/bin/pip3 install --upgrade pip && venv/bin/pip3 install -r requirements.txt
+RUN mkdir -p /var/data/harvester && setfacl -R -d -m apache:rwx /var/data/harvester && setfacl -R -m u:apache:rwx /var/data/harvester
 RUN mkdir -p /var/log/harvester && mkdir -p /var/data/harvester
-RUN setfacl -R -d -m apache:rwx /var/data/harvester && setfacl -R -m u:apache:rwx /var/data/harvester
 COPY conf/harvester-config.py /opt/apps/harvester/current/myconfig.py
 
 # RDA Registry
 COPY src/rda-registry /opt/apps/registry/current
 RUN cd /opt/apps/registry/current/ && composer install -o
+RUN mkdir -p /var/data/error && setfacl -R -d -m apache:rwx /var/data/error && setfacl -R -m u:apache:rwx /var/data/error
+RUN mkdir -p /var/data/portal && setfacl -R -d -m apache:rwx /var/data/portal && setfacl -R -m u:apache:rwx /var/data/portal
+RUN mkdir -p /var/data/activity && setfacl -R -d -m apache:rwx /var/data/activity && setfacl -R -m u:apache:rwx /var/data/activity
+RUN mkdir -p /var/data/importer && setfacl -R -d -m apache:rwx /var/data/importer && setfacl -R -m u:apache:rwx /var/data/importer
 RUN mkdir -p /var/data/registry && setfacl -R -d -m apache:rwx /var/data/registry && setfacl -R -m u:apache:rwx /var/data/registry
 RUN mkdir -p /var/log/registry && setfacl -R -d -m apache:rwx /var/log/registry && setfacl -R -m u:apache:rwx /var/log/registry
 COPY conf/rda-registry-vhost.conf /etc/httpd/conf.d/rda-registry-vhost.conf
@@ -81,5 +85,8 @@ ENV LANGUAGE en_US:en
 ENV LC_ALL en_US.UTF-8
 
 EXPOSE 80
+
+RUN chown -R apache /var/data/registry
+RUN chown -R apache /var/log/registry
 
 CMD ["/usr/bin/supervisord"]
